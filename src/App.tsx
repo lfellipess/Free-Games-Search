@@ -6,10 +6,6 @@ import Search from "./components/Search"
 function App() {
   const [games, setGames] = useState<Game[]>([]);
 
-  const fetchGamesData =async () => {
-    const results = await
-  }
-
   return (
     <div className='h-full bg-zinc-900 text-zinc-300'>
       <Header />
