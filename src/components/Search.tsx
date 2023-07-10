@@ -16,7 +16,7 @@ function Search(props: SearchProps) {
     setCategory(event.target.value);
   }
   return (
-    <form className="bg-zinc-800 p-6 rounded-lg flex items-center gap-8" onSubmit={handleSearchCategory}>
+    <form className="flex items-center gap-8" onSubmit={handleSearchCategory}>
       <input
         className="rounded-lg w-full bg-zinc-900 p-4"
         type="text"
