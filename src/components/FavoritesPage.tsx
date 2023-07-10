@@ -19,9 +19,9 @@ function FavoritesPage() {
 
     return (
         <div>
-            {favorites.map((game, index) => (
+            {favorites.map((game) => (
                 <GameCard
-                    key={game.id || index}
+                    key={game.id}
                     id={game.id}
                     title={game.title}
                     thumbnail={game.thumbnail}
