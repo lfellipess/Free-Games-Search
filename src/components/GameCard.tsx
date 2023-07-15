@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface Game {
   id: number;
@@ -11,14 +11,21 @@ export interface Game {
 }
 
 interface GameCardProps extends Game {
+  isFavorite?: boolean;
+  onFavorite?: (id: number) => void;
   onUnfavorite?: (id: number) => void;
 }
 
 function GameCard(props: GameCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(props.isFavorite);
+
+  useEffect(() => {
+    setIsFavorite(props.isFavorite);
+  }, [props.isFavorite])
 
   function handleFavorite() {
     setIsFavorite(true);
+    props.onFavorite && props.onFavorite(props.id);
     const storedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
     const newFavorites = [...storedFavorites, props]
     localStorage.setItem('favorites', JSON.stringify(newFavorites));

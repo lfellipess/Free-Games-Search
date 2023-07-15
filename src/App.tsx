@@ -8,15 +8,30 @@ import FavoritesPage from "./components/FavoritesPage";
 function App() {
   const [games, setGames] = useState<Game[]>([]);
   const [page, setPage] = useState('search');
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 
   const fetchGamesData = async () => {
     const results = await fetchGames();
     setGames(results);
+    JSON.parse(localStorage.getItem('games') || '[]');
+    localStorage.setItem('games', JSON.stringify(results));
   }
 
-  const handleSearch = async (category: string) => {
-    const results = await fetchGamesByCategory(category);
-    setGames(results);
+  const handleSearchByCategory = async (category: string) => {
+    if (category === '') {
+      const storedGames = JSON.parse(localStorage.getItem('games') || '[]');
+      setGames(storedGames);
+    } else {
+      const results = await fetchGamesByCategory(category);
+      setGames(results);
+    }
+  }
+
+  function handleSearchByTitle(title: string) {
+    const storedGames = JSON.parse(localStorage.getItem('games') || '[]');
+    const lowercaseTitle = title.toLowerCase();
+    const filteredGames = storedGames.filter((game: Game) => game.title.toLowerCase().includes(lowercaseTitle));
+    setGames(filteredGames);
   }
 
   function handlePageSearch() {
@@ -31,6 +46,13 @@ function App() {
     fetchGamesData();
   }, []);
 
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem('favorites');
+    if (storedFavorites) {
+      setFavoriteIds(JSON.parse(storedFavorites).map((game: Game) => game.id));
+    }
+  }, [page])
+
   return (
     <div className='h-full bg-zinc-900 text-zinc-300'>
       <Header />
@@ -39,7 +61,7 @@ function App() {
           {page === 'search' ? (
             <div>
               <div className="bg-zinc-800 p-6 rounded-lg flex flex-col gap-6">
-                <Search onSearch={handleSearch} />
+                <Search onSearchByCategory={handleSearchByCategory} onSearchByTitle={handleSearchByTitle} />
                 <div className="flex justify-center">
                   <button className="bg-blue-500 hover:bg-blue-400 transition-colors duration-300 rounded-lg py-4 px-6 text-white" onClick={handlePageFavorites}>
                     Meus Favotitos
@@ -57,15 +79,18 @@ function App() {
                     platform={game.platform}
                     developer={game.developer}
                     short_description={game.short_description}
+                    isFavorite={favoriteIds.includes(game.id)}
                   />
                 )
               })}
             </div>
           ) : (
-            <div>
-              <button className="bg-blue-500 hover:bg-blue-400 transition-colors duration-300 rounded-lg py-4 px-6 text-white" onClick={handlePageSearch}>
-                Pesquisar
-              </button>
+            <div className="flex flex-col items-center">
+              <div>
+                <button className="bg-blue-500 hover:bg-blue-400 transition-colors duration-300 rounded-lg py-4 px-6 text-white" onClick={handlePageSearch}>
+                  Pesquisa
+                </button>
+              </div>
               <FavoritesPage />
             </div>
           )}
